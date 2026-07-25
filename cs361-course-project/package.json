@@ -9,9 +9,21 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.2.10",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@fontsource/roboto": "^5.3.0",
+    "@mui/icons-material": "^9.2.0",
+    "@mui/material": "^9.2.0",
+    "@mui/material-nextjs": "^9.1.1",
+    "@supabase/supabase-js": "^2.109.0",
+    "babel-plugin-react-css-modules": "^5.2.6",
+    "dotenv": "^17.4.2",
+    "install": "^0.13.0",
+    "next": "^16.2.11",
+    "npm": "^11.18.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tmdbv3": "^0.1.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -19,7 +31,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "^16.2.11",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
