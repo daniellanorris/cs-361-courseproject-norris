@@ -17,8 +17,12 @@ export async function filterKeywordsByMood(movieIdList, selectedMood) {
         properties: {
             filtered_keywords: {
                 type: "array",
-                items: { type: "string" },
-                description: "List of keywords strictly selected from the user's input list."
+                items: {
+                    type: "string"
+                },
+                minItems: 10,
+                maxItems: 15,
+                description: "Return between 10 and 15 keywords."
             }
         },
         required: ["filtered_keywords"]
@@ -30,7 +34,7 @@ export async function filterKeywordsByMood(movieIdList, selectedMood) {
         "Return only valid JSON. " +
         "Your task is to look at a list of keywords " +
         "and select only the ones that match the user's provided mood. " +
-        "There absolutely must be at least 10 keywords and no more than 15 keywords. " +
+        "There absolutely must be at least 10 keywords generated from the provided mood + movie list combo, and no more than 15 keywords. " +
         "Do not invent new keywords. " +
         "There should be no duplicate keywords." +
         "Only return keywords that are explicitly present in the input list." +

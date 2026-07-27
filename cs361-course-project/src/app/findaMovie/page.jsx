@@ -11,6 +11,8 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
+import CircularProgress from "@mui/material/CircularProgress";
+
 
 
 
@@ -278,97 +280,122 @@ export default function Movies() {
             </Typography>
 
 
-            <Box sx={{ mb: 2 }}>
+            {loadingMovies ? (
 
-                <LinearProgress
-                    variant="determinate"
-                    value={progressBar}
-                />
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        minHeight: "300px",
+                        gap: 2
+                    }}
+                >
 
-            </Box>
+                    <CircularProgress size={80} />
 
+                    <Typography variant="h6">
+                        Loading movies...
+                    </Typography>
 
-            {whatModal === 0 && (
+                </Box>
 
+            ) : (
+                <>
 
-                <Card>
+                    <Box sx={{ mb: 2 }}>
 
+                        <LinearProgress
+                            variant="determinate"
+                            value={progressBar}
+                        />
 
-                    <CardContent>
-
-                        <Typography variant="h5">
-                            Select a Mood
-                        </Typography>
-
-
-                        <Box sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 1,
-                            mt: 2
-                        }}>
-
-
-                            {
-                                moodList.map(mood => (
-
-                                    <Button
-
-                                        key={mood}
-
-                                        variant={
-                                            selectedMood === mood
-                                                ? "contained"
-                                                : "outlined"
-                                        }
-
-                                        onClick={() =>
-                                            setSelectedMood(mood)
-                                        }
-
-                                    >
-
-                                        {mood}
-
-                                    </Button>
+                    </Box>
 
 
-                                ))
-                            }
+                    {whatModal === 0 && (
 
 
-                        </Box>
+                        <Card>
+
+
+                            <CardContent>
+
+                                <Typography variant="h5">
+                                    Select a Mood
+                                </Typography>
+
+
+                                <Box sx={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: 1,
+                                    mt: 2
+                                }}>
+
+
+                                    {
+                                        moodList.map(mood => (
+
+                                            <Button
+
+                                                key={mood}
+
+                                                variant={
+                                                    selectedMood === mood
+                                                        ? "contained"
+                                                        : "outlined"
+                                                }
+
+                                                onClick={() =>
+                                                    setSelectedMood(mood)
+                                                }
+
+                                            >
+
+                                                {mood}
+
+                                            </Button>
+
+
+                                        ))
+                                    }
+
+
+                                </Box>
 
 
 
-                        <Button
+                                <Button
 
-                            sx={{ mt: 3 }}
-
-                            disabled={!canGenerateKeywords}
-
-                            onClick={() => {
-
-                                setProgressBar(66);
-
-                                generateKeywords();
-                                setModal(1)
-
-                            }}
-
-                        >
-
-                            {
-                                loadingMovies
-                                    ? "Loading Movies..."
-                                    : "Generate Keywords"
-                            }
-
-                        </Button>
+                                    sx={{ mt: 3 }}
 
 
-                    </CardContent>
-                </Card>
+                                    onClick={() => {
+
+                                        setProgressBar(66);
+
+                                        generateKeywords();
+                                        setModal(1)
+
+                                    }}
+
+                                >
+
+
+
+                                    Generate Keywords
+
+
+                                </Button>
+
+
+                            </CardContent>
+                        </Card>
+
+                    )}
+                </>
 
             )}
 

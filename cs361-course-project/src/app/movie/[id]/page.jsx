@@ -53,12 +53,13 @@ export default async function MoviePage({ params }) {
                 {movie.poster_path && (
                     <CardMedia
                         component="img"
-                        
+                        src={movie.poster_path}
+
                         alt={movie.original_title}
                         sx={{
                             width: 250,
                             height: "auto",
-                            mx: "auto",   // Center the image
+                            mx: "auto",  
                             mt: 2,
                             borderRadius: 2,
                         }}
@@ -111,12 +112,33 @@ export default async function MoviePage({ params }) {
                         {movie.overview}
                     </Typography>
                     <Divider></Divider>
-                     <Typography
+                    <Typography
                         variant="h6"
                         gutterBottom
                     >
-                        Cast and Crew
+                        Genres
                     </Typography>
+                    {movie.genres.map((genre) => {
+                        return (
+                            <Chip label={genre.name} />
+
+
+                        )
+                    })}
+
+                      <Divider></Divider>
+                    <Typography
+                        variant="h6"
+                        gutterBottom
+                    >
+                        Production Companies
+                    </Typography>
+                    {movie.production_companies.map((production_company) => {
+                        return (
+                            <Chip label={production_company.name} />
+
+                        )
+                    })}
                 </CardContent>
             </Card>
         </Box>
