@@ -33,7 +33,7 @@ export async function getMoviesToFilter() {
             }
 
 
-        } catch(error) {
+        } catch (error) {
 
             console.error(error);
             throw error;
@@ -53,11 +53,11 @@ export async function getRandom250keywords(movieIdList) {
 
     const keywords = [];
 
-    for(let i = 0; i < 25; i++) {
+    for (let i = 0; i < 25; i++) {
 
         const randomMovie =
             movieIdList[
-                Math.floor(Math.random() * movieIdList.length)
+            Math.floor(Math.random() * movieIdList.length)
             ];
 
 
@@ -66,9 +66,9 @@ export async function getRandom250keywords(movieIdList) {
             const response = await axios.get(
                 `https://api.themoviedb.org/3/movie/${randomMovie}/keywords`,
                 {
-                    headers:{
+                    headers: {
                         Authorization:
-                        `Bearer ${process.env.MOVIE_DB_API_KEY}`,
+                            `Bearer ${process.env.MOVIE_DB_API_KEY}`,
                     }
                 }
             );
@@ -77,23 +77,23 @@ export async function getRandom250keywords(movieIdList) {
             const movieKeywords = response.data.keywords;
 
 
-            if(movieKeywords.length === 0) {
+            if (movieKeywords.length === 0) {
                 continue;
             }
 
 
             const keyword =
                 movieKeywords[
-                    Math.floor(
-                        Math.random() * movieKeywords.length
-                    )
+                Math.floor(
+                    Math.random() * movieKeywords.length
+                )
                 ];
 
 
             keywords.push(keyword.name);
 
 
-        } catch(error) {
+        } catch (error) {
 
             console.error(error);
 
@@ -103,5 +103,113 @@ export async function getRandom250keywords(movieIdList) {
 
 
     return keywords;
+
+}
+
+export async function getMovieAndKeywords(movieIdList, selectedKeywords) {
+    const movieMatches = [];
+
+    for (const movieId of movieIdList) {
+        try {
+            const response = await axios.get(
+                `https://api.themoviedb.org/3/movie/${movieId}/keywords`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.MOVIE_DB_API_KEY}`,
+                    },
+                }
+            );
+
+            const movieKeywords = response.data.keywords;
+
+            console.log(response.data)
+
+            if (movieKeywords.length === 0) {
+                continue;
+            }
+
+            for (const keyword of selectedKeywords) {
+                const match = movieKeywords.find(
+                    item => item.name === keyword
+                );
+
+                if (match && !movieMatches.includes(movieId)) {
+                    movieMatches.push(movieId);
+                }
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+
+    return movieMatches; 
+}
+
+export async function getMoviesById(movieIdList) {
+    const movieDetailsArray = [];
+
+    for (const movieId of movieIdList) {
+        try {
+            const response = await axios.get(
+                `https://api.themoviedb.org/3/movie/${movieId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.MOVIE_DB_API_KEY}`,
+                    },
+                }
+            );
+
+            const movieDetails = response.data;
+
+            console.log(response.data)
+
+            if (!movieDetails) {
+                continue;
+            }
+
+
+            movieDetailsArray.push(movieDetails);
+            console.log(movieDetailsArray)
+        
+
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    return movieDetailsArray
+
+
+}
+
+
+export async function getMovieById(movieId) {
+
+    try {
+
+        const response = await axios.get(
+            `https://api.themoviedb.org/3/movie/${movieId}`,
+            {
+                headers: {
+                    Authorization:
+                    `Bearer ${process.env.MOVIE_DB_API_KEY}`,
+                },
+            }
+        );
+
+
+        console.log(response.data)
+        return response.data;
+
+
+    } catch(error) {
+
+        console.error(error);
+        throw error;
+
+    }
 
 }

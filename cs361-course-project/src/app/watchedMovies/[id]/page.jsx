@@ -17,7 +17,7 @@ const supabase = createClient(
 
 
 
-export default function Movies({ params }) {
+export default function Movies() {
   const [watchedMovies, setWatchedMovies] = useState([])
   const { id } = useParams();
 
@@ -43,7 +43,7 @@ export default function Movies({ params }) {
   return (
     <ul>
       {watchedMovies.map((movies) => (
-        <Card key={movies.id} variant="outlined">
+        <Card key={movies.id}variant="outlined">
           <CardContent>
             <li key={movies.id}>{movies.movie_id}</li>
           </CardContent>

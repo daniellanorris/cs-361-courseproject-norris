@@ -30,9 +30,11 @@ export async function filterKeywordsByMood(movieIdList, selectedMood) {
         "Return only valid JSON. " +
         "Your task is to look at a list of keywords " +
         "and select only the ones that match the user's provided mood. " +
-        "There must be at least 2 and no more than 5. " +
+        "There absolutely must be at least 10 keywords and no more than 15 keywords. " +
         "Do not invent new keywords. " +
-        "Only return keywords that are explicitly present in the input list.";
+        "There should be no duplicate keywords." +
+        "Only return keywords that are explicitly present in the input list." +
+        "The result should always have filtered_keywords as the key"
 
     const userContent = `
     Mood: ${selectedMood}
