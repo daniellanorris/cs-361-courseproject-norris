@@ -62,6 +62,13 @@ export default function Movies() {
     const [loadingMovies, setLoadingMovies] =
         useState(true);
 
+
+    const [generatingKeywords, setGeneratingKeywords] =
+        useState(false)
+
+    const [loadingFinalMoviePage, setLoadingFinalMoviePage] =
+        useState(false)
+
     const [finalMovieList, setFinalMovieList] = useState([])
 
 
@@ -69,6 +76,26 @@ export default function Movies() {
     const canGenerateKeywords =
         selectedMood &&
         movieIdList.length > 0;
+
+    function resetMovieFlow() {
+        setConfirmationDialog(false);
+
+        // progress
+        setProgressBar(33);
+
+        // modal step
+        setModal(0);
+
+        // mood selection
+        setSelectedMood(null);
+
+        // keyword selections
+        setMoodKeywords([]);
+        setSelectedKeywords([]);
+
+        // generated movies
+        setFinalMovieList([]);
+    }
 
 
 
@@ -109,6 +136,7 @@ export default function Movies() {
             finally {
 
                 setLoadingMovies(false);
+     
 
             }
 
@@ -171,6 +199,10 @@ export default function Movies() {
 
             console.error(error);
 
+        }
+        finally {
+            setGeneratingKeywords(false)
+           
         }
 
     }
@@ -267,6 +299,9 @@ export default function Movies() {
         } catch (error) {
             console.error(error);
         }
+        finally {
+            setLoadingFinalMoviePage(false)
+        }
 
 
     }
@@ -275,7 +310,7 @@ export default function Movies() {
 
         <>
 
-            <Typography variant="h4">
+            <Typography sx={{ margin: "10px" }} variant="h4">
                 Movie Selection
             </Typography>
 
@@ -296,7 +331,7 @@ export default function Movies() {
                     <CircularProgress size={80} />
 
                     <Typography variant="h6">
-                        Loading movies...
+                        Loading movie generator tool...
                     </Typography>
 
                 </Box>
@@ -379,6 +414,8 @@ export default function Movies() {
                                         generateKeywords();
                                         setModal(1)
 
+                                        setGeneratingKeywords(true)
+
                                     }}
 
                                 >
@@ -399,158 +436,219 @@ export default function Movies() {
 
             )}
 
-            {whatModal == 1 && (
-                <Card>
-                    <CardContent>
+            {generatingKeywords ? (
 
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        minHeight: "300px",
+                        gap: 2
+                    }}
+                >
 
-                        <Typography variant="h5">
-                            Select Keywords
-                        </Typography>
+                    <CircularProgress size={80} />
 
-
-
-                        {
-                            moodKeywords.length === 0
-
-                                ?
-
-                                <Typography>
-                                    No keywords generated.
-                                </Typography>
-
-                                :
-
-                                moodKeywords.map((keyword) => (
-                                    <Box key={keyword}>
-                                        <Button variant={
-                                            selectedKeywords.includes(keyword)
-                                                ? "contained"
-                                                : "outlined"
-                                        }
-                                            onClick={() => { selectedKeywords.includes(keyword) ? removeFromKeywords(keyword) : appendToKeywords(keyword) }}> {keyword}
-                                        </Button>
-
-                                    </Box>
-
-                                ))
-                        }
-
-                        <Box>
-                            <Button onClick={() => {
-                                generateMovieList(movieIdList, selectedKeywords)
-                                setModal(2)
-                                setProgressBar(100)
-
-                            }
-                            }> Generate Movies </Button>
-                        </Box>
-                    </CardContent>
-
-
-                </Card>
-
-            )}
-            {whatModal == 2 && (
-
-                <>
-
-                    <Typography variant="h5">
-                        Generated Movies
+                    <Typography variant="h6">
+                        Loading keywords...
                     </Typography>
 
+                </Box>
 
-                    {
-                        finalMovieList.length === 0
+            ) : (
+                <>
 
-                            ?
+                    {whatModal == 1 && (
+                        <Card>
+                            <CardContent>
 
-                            <Typography>
-                                No movies generated, please select different keywords
-                            </Typography>
 
-                            :
+                                <Typography variant="h5">
+                                    Select Keywords
+                                </Typography>
 
-                            <Grid
-                                container
-                                spacing={3}
-                                sx={{ mt: 2 }}
-                            >
 
-                                {finalMovieList.map(movie => (
 
-                                    <Grid
-                                        key={movie.id}
-                                        size={{
-                                            xs: 12,
-                                            sm: 6,
-                                            md: 4
-                                        }}
-                                    >
+                                {
+                                    moodKeywords.length === 0
 
-                                        <Card>
+                                        ?
 
-                                            <CardContent>
+                                        <Typography>
+                                            No keywords generated.
+                                        </Typography>
 
-                                                {
-                                                    movie.poster_path && (
-                                                        <Image
-                                                            width={200}
-                                                            height={300}
-                                                            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                                                            alt={movie.original_title}
-                                                        />
-                                                    )
+                                        :
+
+                                        moodKeywords.map((keyword) => (
+                                            <Box key={keyword}>
+                                                <Button variant={
+                                                    selectedKeywords.includes(keyword)
+                                                        ? "contained"
+                                                        : "outlined"
                                                 }
-
-
-                                                <Typography variant="h6">
-                                                    {movie.original_title}
-                                                </Typography>
-
-
-                                                <Typography
-                                                    sx={{
-                                                        mt: 1,
-                                                        mb: 2
-                                                    }}
-                                                >
-                                                    {movie.overview}
-                                                </Typography>
-
-
-                                                <Button
-                                                    variant="contained"
-                                                    href={`/movie/${movie.id}`}
-                                                >
-                                                    Watch Movie
+                                                    onClick={() => { selectedKeywords.includes(keyword) ? removeFromKeywords(keyword) : appendToKeywords(keyword) }}> {keyword}
                                                 </Button>
 
+                                            </Box>
 
-                                            </CardContent>
+                                        ))
+                                }
 
-                                        </Card>
+                                <Box>
+                                    <Button onClick={() => {
+                                        generateMovieList(movieIdList, selectedKeywords)
+                                        setModal(2)
+                                        setProgressBar(100)
+                                        setLoadingFinalMoviePage(true)
+
+                                    }
+                                    }> Generate Movies </Button>
+                                </Box>
+                            </CardContent>
+
+
+                        </Card>
+
+                    )}
+                </>
+            )}
+
+            {loadingFinalMoviePage ? (
+
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        minHeight: "300px",
+                        gap: 2
+                    }}
+                >
+
+                    <CircularProgress size={80} />
+
+                    <Typography variant="h6">
+                        Loading movies...
+                    </Typography>
+
+                </Box>
+
+            ) : (
+                <>
+                    {whatModal == 2 && (
+
+                        <>
+
+                            <Typography variant="h5">
+                                Generated Movies
+                            </Typography>
+                            <Button onClick={() => { setConfirmationDialog(true) }}>  Regenerate movies? </Button>
+
+
+                            {
+                                finalMovieList.length === 0
+
+                                    ?
+
+                                    <Typography>
+                                        No movies generated, please select different keywords
+                                    </Typography>
+
+                                    :
+
+                                    <Grid
+                                        container
+                                        spacing={3}
+                                        sx={{ mt: 2 }}
+                                    >
+
+                                        {finalMovieList.map(movie => (
+
+                                            <Grid
+                                                key={movie.id}
+                                                size={{
+                                                    xs: 12,
+                                                    sm: 6,
+                                                    md: 4
+                                                }}
+                                            >
+
+                                                <Card>
+
+                                                    <CardContent>
+
+                                                        {
+                                                            movie.poster_path && (
+                                                                <Image
+                                                                    width={200}
+                                                                    height={300}
+                                                                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                                                                    alt={movie.original_title}
+                                                                />
+                                                            )
+                                                        }
+
+
+                                                        <Typography variant="h6">
+                                                            {movie.original_title}
+                                                        </Typography>
+
+
+                                                        <Typography
+                                                            sx={{
+                                                                mt: 1,
+                                                                mb: 2
+                                                            }}
+                                                        >
+                                                            {movie.overview}
+                                                        </Typography>
+
+
+                                                        <Button
+                                                            variant="contained"
+                                                            href={`/movie/${movie.id}`}
+                                                        >
+                                                            View Movie Details
+                                                        </Button>
+
+
+                                                    </CardContent>
+
+                                                </Card>
+
+                                            </Grid>
+
+                                        ))
+                                        }
 
                                     </Grid>
 
-                                ))
-                                }
-
-                            </Grid>
-
-                    }
+                            }
 
 
-                    <Box sx={{ mt: 3 }}>
-                        <Button href="/home">
-                            Finish
-                        </Button>
-                    </Box>
+                            <Box sx={{ mt: 3 }}>
+                                <Button href="/home">
+                                    Finish
+                                </Button>
+                            </Box>
 
 
+                        </>
+
+                    )}
                 </>
-
             )}
+
+
+
+
+
+
+
 
             <Modal
                 open={confirmationDialog}
@@ -566,15 +664,9 @@ export default function Movies() {
                 }}>
 
 
-                    <Typography>
-                        Regenerate movies?
-                    </Typography>
-
-
                     <Button
                         onClick={() => {
-                            setConfirmationDialog(false);
-                            generateKeywords();
+                            resetMovieFlow()
                         }}
                     >
                         Yes

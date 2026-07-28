@@ -32,7 +32,6 @@ export default async function RootLayout({
   const cookieStore = await cookies();
 
 const userCookie = cookieStore.get("user")?.value;
-console.log(userCookie)
 
 const userId = userCookie
   ? JSON.parse(userCookie).id

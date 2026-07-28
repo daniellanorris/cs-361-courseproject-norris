@@ -40,7 +40,7 @@ export function AppProvider({ children }) {
 
 
     return (
-        <AppContext.Provider value={{ user, login, logout }}>
+        <AppContext.Provider value={{ user, login, logout, setUser }}>
             {children}
         </AppContext.Provider>
     );

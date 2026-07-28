@@ -7,6 +7,7 @@ import {
     Chip,
     Divider,
     Typography,
+    Button
 } from "@mui/material";
 
 
@@ -53,7 +54,7 @@ export default async function MoviePage({ params }) {
                 {movie.poster_path && (
                     <CardMedia
                         component="img"
-                        src={movie.poster_path}
+                        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
 
                         alt={movie.original_title}
                         sx={{
@@ -140,7 +141,9 @@ export default async function MoviePage({ params }) {
                         )
                     })}
                 </CardContent>
+                <Button> Watch Movie </Button>
             </Card>
+
         </Box>
     );
 }

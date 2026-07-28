@@ -53,7 +53,12 @@ export default function LoginForm() {
 
         login(user);
 
+        if (user.id) {
         router.push("/home");
+        }
+        else {
+            router.push("/welcome")
+        }
     };
 
     return (
