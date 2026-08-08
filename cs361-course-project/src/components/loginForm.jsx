@@ -12,24 +12,20 @@ import {
     Button,
 } from "@mui/material";
 
-import {useAuth} from '../components/appProvider'
 
 import { useState } from "react";
 
-import { confirmAuthentication } from "../lib/db";
-
-import { useRouter } from "next/navigation";
 
 
 export default function LoginForm() {
-
-    const router = useRouter();
-    const { login } = useAuth();
 
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
+
+    const [authResponse, setAuthResponse] = useState("")
+    const [authColor, setAuthColor] = useState("")
 
     const handleChange = (e) => {
         setFormData({
@@ -37,30 +33,47 @@ export default function LoginForm() {
             [e.target.name]: e.target.value,
         });
     };
-
-    const handleSubmit = async (e) => {
+    async function handleSubmit(e) {
         e.preventDefault();
 
-        const user = await confirmAuthentication(
-            formData.email,
-            formData.password
-        );
+        try {
+            const response = await fetch(
+                "http://localhost:3000/api/supabase/confirm-authentication",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: formData.email,
+                        password: formData.password,
+                    }),
+                }
+            );
 
-        if (!user) {
-            alert("Invalid username or password");
-            return;
+
+            const data = await response.json();
+
+            if (response.status == 200) {
+                setAuthResponse("User found")
+
+            }
+
+            if (response.status == 400) {
+                setAuthColor('red')
+                setAuthResponse("Username or password is incorrect")
+            }
+
+
+            console.log("Authentication response:", data);
+
+        } catch (error) {
+            console.error(
+                "Failed to connect to authentication service:",
+                error
+            );
         }
-
-        login(user);
-
-        if (user.id) {
-        router.push("/home");
-        }
-        else {
-            router.push("/welcome")
-        }
-    };
-
+    }
     return (
         <Box
             sx={{
@@ -135,6 +148,11 @@ export default function LoginForm() {
                             </Button>
                         </Box>
                     </Box>
+                    {authColor === 'red' &&
+                        <FormHelperText style={{ background: "#CA3433", padding: "10px", margin: "5px", border: "10px", opacity: ".5", color: "white" }}>
+                            {authResponse}
+                        </FormHelperText>
+                    }
 
                 </CardContent>
             </Card>
