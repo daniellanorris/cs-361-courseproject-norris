@@ -16,7 +16,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
-import { withTheme } from '@emotion/react'
+
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -27,20 +27,42 @@ export default function Movies() {
   const [watchedMovies, setWatchedMovies] = useState([])
   const [titleFilter, setTitleFilter] = useState('')
   const [ratingFilter, setRatingFilter] = useState('all')
-  const { id } = useParams()
+
+
+  function getUserFromCookie() {
+    const cookies = document.cookie.split("; ");
+
+    const userCookie = cookies.find(cookie =>
+      cookie.startsWith("user=")
+    );
+
+    if (!userCookie) {
+      return null;
+    }
+
+    const value = decodeURIComponent(
+      userCookie.substring("user=".length)
+    );
+
+    return JSON.parse(value);
+  }
 
   useEffect(() => {
     getWatchedMovies();
-  }, [id]);
+  }, []);
+
 
   async function getWatchedMovies() {
-    if (!id) {
-      return;
-    }
-
     try {
+      const user = getUserFromCookie();
+
+      if (!user) {
+        console.error("No authenticated user found");
+        return;
+      }
+
       const response = await fetch(
-        `http://localhost:${process.env.NEXT_PUBLIC_SAVE_MOVIE}/saved-movies?id=${id}`
+        `http://localhost:${process.env.NEXT_PUBLIC_SAVE_MOVIE}/saved-movies?id=${user.id}`
       );
 
       const data = await response.json();
@@ -58,6 +80,7 @@ export default function Movies() {
       });
 
       const uniqueMovieIds = Object.keys(movieCounts);
+
       const movieResponse = await fetch("/api/tmdb/moviesById", {
         method: "POST",
         headers: {
@@ -81,7 +104,6 @@ export default function Movies() {
       console.error("Failed to get watched movies:", error);
     }
   }
-
   const filteredMovies = watchedMovies.filter((movie) => {
     const matchesTitle = movie.original_title
       .toLowerCase()

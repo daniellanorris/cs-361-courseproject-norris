@@ -61,7 +61,7 @@ export default function LoginForm() {
             if (response.status == 200) {
                 setAuthResponse("User found")
                 setAuthColor('green')
-                login(data.data[0]);
+                login(data);
                 router.push("/home");
 
 
