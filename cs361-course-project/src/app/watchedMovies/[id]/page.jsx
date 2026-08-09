@@ -30,30 +30,56 @@ export default function Movies() {
   const { id } = useParams()
 
   useEffect(() => {
-    getWatchedMovies()
-  }, [])
+    getWatchedMovies();
+  }, [id]);
 
   async function getWatchedMovies() {
-    const { data, error } = await supabase
-      .from("SavedMovies")
-      .select("movie_id")
-      .eq("user_id", id)
-
-    if (error) {
-      console.error(error)
-      return
+    if (!id) {
+      return;
     }
 
-    const movieIds = data.map((row) => row.movie_id)
+    try {
+      const response = await fetch(
+        `http://localhost:${process.env.NEXT_PUBLIC_SAVE_MOVIE}/saved-movies?id=${id}`
+      );
 
-    const response = await fetch("/api/tmdb/moviesById", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ movieList: movieIds }),
-    })
+      const data = await response.json();
 
-    const movieData = await response.json()
-    setWatchedMovies(movieData.movies)
+      if (!response.ok) {
+        console.error("Failed to get saved movies:", data);
+        return;
+      }
+
+      const movieCounts = {};
+
+      data.forEach((movie) => {
+        movieCounts[movie.movie_id] =
+          (movieCounts[movie.movie_id] || 0) + 1;
+      });
+
+      const uniqueMovieIds = Object.keys(movieCounts);
+      const movieResponse = await fetch("/api/tmdb/moviesById", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          movieList: uniqueMovieIds,
+        }),
+      });
+
+      const movieData = await movieResponse.json();
+
+      const moviesWithCounts = movieData.movies.map((movie) => ({
+        ...movie,
+        watchCount: movieCounts[movie.id] || 0
+      }));
+
+      setWatchedMovies(moviesWithCounts);
+
+    } catch (error) {
+      console.error("Failed to get watched movies:", error);
+    }
   }
 
   const filteredMovies = watchedMovies.filter((movie) => {
@@ -125,41 +151,132 @@ export default function Movies() {
         </Typography>
       )}
 
-      <Grid container spacing={3} sx={{ mt: 2 }}>
+      <Grid
+        container
+        spacing={3}
+        sx={{
+          mt: 2,
+          px: 2,
+          alignItems: "stretch",
+        }}
+      >
         {filteredMovies.map((movie) => (
-          <Grid key={movie.id} size={{ xs: 12, sm: 6, md: 4 }} sx={{ margin: "12px" }}>
-            <Card>
-              <CardContent>
+          <Grid
+            key={movie.id}
+            size={{ xs: 12, sm: 6, md: 4 }}
+            sx={{
+              display: "flex",
+            }}
+          >
+            <Card
+              sx={{
+                width: "100%",
+                height: 650,
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: "0 0 15px rgba(255, 255, 255, 0.25)",
+                transition: "box-shadow 0.3s ease, transform 0.3s ease",
+
+                "&:hover": {
+                  boxShadow: "0 0 25px rgba(255, 255, 255, 0.55)",
+                  transform: "translateY(-4px)",
+                },
+              }}
+            >
+              <CardContent
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "100%",
+                }}
+              >
                 {movie.poster_path && (
-                  <Image
-                    width={200}
-                    height={300}
-                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                    alt={movie.original_title}
-                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      mb: 1,
+                    }}
+                  >
+                    <Image
+                      width={200}
+                      height={300}
+                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                      alt={movie.original_title}
+                    />
+                  </Box>
                 )}
 
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 0.5,
+                    mt: 1,
+                  }}
+                >
                   {movie.genres.map((genre) => (
-                    <Chip key={genre.id} label={genre.name} />
+                    <Chip
+                      key={genre.id}
+                      label={genre.name}
+                    />
                   ))}
                 </Box>
 
-                <Typography variant="h6" sx={{ mt: 1 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mt: 1,
+                    minHeight: "32px",
+                  }}
+                >
                   {movie.original_title}
                 </Typography>
 
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mb: 1,
+                  }}
+                >
+                  Number of times watched: {movie.watchCount}
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mb: 1,
+                  }}
+                >
                   Rating: {movie.vote_average?.toFixed(1)} / 10
                 </Typography>
 
-                <Typography sx={{ mt: 1, mb: 2 }}>
-                  {movie.overview}
-                </Typography>
+                {/* Scrollable description */}
+                <Box
+                  sx={{
+                    height: 100,
+                    overflowY: "scroll",
+                    mb: 2,
+                    pr: 1,
+                  }}
+                >
+                  <Typography>
+                    {movie.overview}
+                  </Typography>
+                </Box>
 
-                <Button variant="contained" href={`/movie/${movie.id}`}>
-                  Re-watch movie
-                </Button>
+                {/* Keep button at bottom */}
+                <Box sx={{ mt: "auto" }}>
+                  <Button
+                    variant="contained"
+                    href={`/movie/${movie.id}`}
+                    fullWidth
+                  >
+                    View Movie Details
+                  </Button>
+                </Box>
               </CardContent>
             </Card>
           </Grid>

@@ -14,7 +14,8 @@ import {
 
 
 import { useState } from "react";
-
+import { useAuth } from "../components/appProvider";
+import { useRouter } from "next/navigation";
 
 
 export default function LoginForm() {
@@ -23,6 +24,9 @@ export default function LoginForm() {
         email: "",
         password: "",
     });
+
+    const { login } = useAuth();
+    const router = useRouter();
 
     const [authResponse, setAuthResponse] = useState("")
     const [authColor, setAuthColor] = useState("")
@@ -57,6 +61,9 @@ export default function LoginForm() {
             if (response.status == 200) {
                 setAuthResponse("User found")
                 setAuthColor('green')
+                login(data.data[0]);
+                router.push("/home");
+
 
             }
 

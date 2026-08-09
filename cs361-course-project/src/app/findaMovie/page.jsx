@@ -136,7 +136,7 @@ export default function Movies() {
             finally {
 
                 setLoadingMovies(false);
-     
+
 
             }
 
@@ -202,7 +202,7 @@ export default function Movies() {
         }
         finally {
             setGeneratingKeywords(false)
-           
+
         }
 
     }
@@ -654,35 +654,77 @@ export default function Movies() {
                 open={confirmationDialog}
                 onClose={() => setConfirmationDialog(false)}
             >
-
-                <Box sx={{
-                    width: 400,
-                    bgcolor: "background.paper",
-                    p: 3,
-                    mx: "auto",
-                    mt: "20%"
-                }}>
-
-
-                    <Button
-                        onClick={() => {
-                            resetMovieFlow()
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: { xs: "90%", sm: 450 },
+                        bgcolor: "background.paper",
+                        borderRadius: 3,
+                        boxShadow: 24,
+                        p: 4,
+                        outline: "none",
+                    }}
+                >
+                    <Typography
+                        variant="h5"
+                        sx={{
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            mb: 2,
+                            color: "text.primary",
                         }}
                     >
-                        Yes
-                    </Button>
+                        Regenerate Movies?
+                    </Typography>
 
-
-                    <Button
-                        onClick={() => setConfirmationDialog(false)}
+                    <Typography
+                        variant="body1"
+                        sx={{
+                            textAlign: "center",
+                            color: "text.secondary",
+                            mb: 4,
+                            lineHeight: 1.6,
+                        }}
                     >
-                        Cancel
-                    </Button>
+                        Are you sure you want to regenerate your movie
+                        recommendations? Your current results will be replaced.
+                    </Typography>
 
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: 2,
+                        }}
+                    >
+                        <Button
+                            variant="outlined"
+                            onClick={() => setConfirmationDialog(false)}
+                            sx={{
+                                minWidth: 120,
+                                borderRadius: 2,
+                                textTransform: "none",
+                            }}
+                        >
+                            Cancel
+                        </Button>
 
+                        <Button
+                            variant="contained"
+                            onClick={() => resetMovieFlow()}
+                            sx={{
+                                minWidth: 120,
+                                borderRadius: 2,
+                                textTransform: "none",
+                            }}
+                        >
+                            Yes, Regenerate
+                        </Button>
+                    </Box>
                 </Box>
-
-
             </Modal>
 
 

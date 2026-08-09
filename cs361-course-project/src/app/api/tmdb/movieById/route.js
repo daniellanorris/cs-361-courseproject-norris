@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getMovieById} from "../../../../lib/tmbd";
+import { getMovieById } from "../../../../lib/tmbd";
 
 export async function POST(request) {
 
@@ -10,7 +10,7 @@ export async function POST(request) {
 
         const movieDetail =
             await getMovieById(
-              movie
+                movie
             );
 
         return NextResponse.json({

@@ -10,12 +10,14 @@ import {
     Button
 } from "@mui/material";
 
+import SaveMovieButton from "../../../components/saveMovieButton";
 
 export default async function MoviePage({ params }) {
+
     const { id: movieId } = await params;
 
     const response = await fetch(
-        "http://localhost:3000/api/tmdb/movieById",
+        "http://localhost:3001/api/tmdb/movieById",
         {
             method: "POST",
             headers: {
@@ -31,7 +33,11 @@ export default async function MoviePage({ params }) {
     const movie = data.movie;
 
     if (!movie) {
-        return <Typography variant="h4">Movie not found</Typography>;
+        return (
+            <Typography variant="h4">
+                Movie not found
+            </Typography>
+        );
     }
 
     return (
@@ -51,16 +57,16 @@ export default async function MoviePage({ params }) {
                     boxShadow: 6,
                 }}
             >
+
                 {movie.poster_path && (
                     <CardMedia
                         component="img"
                         src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-
                         alt={movie.original_title}
                         sx={{
                             width: 250,
                             height: "auto",
-                            mx: "auto",  
+                            mx: "auto",
                             mt: 2,
                             borderRadius: 2,
                         }}
@@ -75,6 +81,7 @@ export default async function MoviePage({ params }) {
                 <Divider />
 
                 <CardContent>
+
                     <Box
                         sx={{
                             display: "flex",
@@ -99,10 +106,7 @@ export default async function MoviePage({ params }) {
                         />
                     </Box>
 
-                    <Typography
-                        variant="h6"
-                        gutterBottom
-                    >
+                    <Typography variant="h6" gutterBottom>
                         Overview
                     </Typography>
 
@@ -112,38 +116,42 @@ export default async function MoviePage({ params }) {
                     >
                         {movie.overview}
                     </Typography>
-                    <Divider></Divider>
-                    <Typography
-                        variant="h6"
-                        gutterBottom
-                    >
+
+                    <Divider />
+
+                    <Typography variant="h6" gutterBottom>
                         Genres
                     </Typography>
-                    {movie.genres.map((genre) => {
-                        return (
-                            <Chip label={genre.name} />
 
+                    {movie.genres.map((genre) => (
+                        <Chip
+                            key={genre.id}
+                            label={genre.name}
+                            sx={{ mr: 1 }}
+                        />
+                    ))}
 
-                        )
-                    })}
+                    <Divider />
 
-                      <Divider></Divider>
-                    <Typography
-                        variant="h6"
-                        gutterBottom
-                    >
+                    <Typography variant="h6" gutterBottom>
                         Production Companies
                     </Typography>
-                    {movie.production_companies.map((production_company) => {
-                        return (
-                            <Chip label={production_company.name} />
 
-                        )
-                    })}
+                    {movie.production_companies.map((company) => (
+                        <Chip
+                            key={company.id}
+                            label={company.name}
+                            sx={{ mr: 1 }}
+                        />
+                    ))}
+
                 </CardContent>
-                <Button> Watch Movie </Button>
-            </Card>
 
+
+
+                <SaveMovieButton movieId={movieId} />
+
+            </Card>
         </Box>
     );
 }
