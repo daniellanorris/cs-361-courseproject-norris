@@ -7,7 +7,6 @@ import {
     Chip,
     Divider,
     Typography,
-    Button
 } from "@mui/material";
 
 import SaveMovieButton from "../../../components/saveMovieButton";
@@ -16,6 +15,7 @@ export default async function MoviePage({ params }) {
 
     const { id: movieId } = await params;
 
+    // Get movie
     const response = await fetch(
         "http://localhost:3001/api/tmdb/movieById",
         {
@@ -39,6 +39,26 @@ export default async function MoviePage({ params }) {
             </Typography>
         );
     }
+
+    // Format release date using date microservice
+    const dateResponse = await fetch(
+        `http://localhost:${process.env.DATE_TIME_PORT}/format-date`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                date: movie.release_date,
+            }),
+        }
+    );
+
+    const dateData = await dateResponse.json();
+
+    console.log("Date response:", dateData);
+
+    const formattedDate = dateData.formattedDate;
 
     return (
         <Box
@@ -75,7 +95,7 @@ export default async function MoviePage({ params }) {
 
                 <CardHeader
                     title={movie.original_title}
-                    subheader={movie.release_date}
+                    subheader={formattedDate}
                 />
 
                 <Divider />
@@ -146,8 +166,6 @@ export default async function MoviePage({ params }) {
                     ))}
 
                 </CardContent>
-
-
 
                 <SaveMovieButton movieId={movieId} />
 
