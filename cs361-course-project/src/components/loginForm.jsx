@@ -56,6 +56,7 @@ export default function LoginForm() {
 
             if (response.status == 200) {
                 setAuthResponse("User found")
+                setAuthColor('green')
 
             }
 
@@ -150,6 +151,11 @@ export default function LoginForm() {
                     </Box>
                     {authColor === 'red' &&
                         <FormHelperText style={{ background: "#CA3433", padding: "10px", margin: "5px", border: "10px", opacity: ".5", color: "white" }}>
+                            {authResponse}
+                        </FormHelperText>
+                    }
+                    {authColor === 'green' &&
+                        <FormHelperText style={{ background: "green", padding: "10px", margin: "5px", border: "10px", opacity: ".5", color: "white" }}>
                             {authResponse}
                         </FormHelperText>
                     }
